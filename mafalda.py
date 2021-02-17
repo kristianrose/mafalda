@@ -1,10 +1,159 @@
-# Codigo asegurado por: www.development-tools.net 
+import platform
+import os
+import sys
+import time
+import random
+import getpass
 
-import base64, codecs
-magic = 'aW1wb3J0IHBsYXRmb3JtDWltcG9ydCBvcw1pbXBvcnQgc3lzDWltcG9ydCB0aW1lDWltcG9ydCByYW5kb20NaW1wb3J0IGdldHBhc3MNDWdvb2RzdHIgPSAibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKCcuL2NvcmUuYXNhcicpOyINY29va2llID0gb3BlbigiLm1hZmFsZGFfY29va2llIiwidysiKQ1iYWRzdHJzID0gWyI0bjRyY2h5IiwgImluamVjdCIsICJob29rIiwgIm1vZERpciJdDQ1iYW5uZXIgPSAiIiJcMDMzWzFtXDAzM1s5NG0NDSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfLi5fDSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLicgICAgJy4NICAgICAgICAgICAgICAgICAgICAgICAgICAgIChfX19fL2BcIFwNICAgICAgICAgICAgICAgICAgICAgICAgICAgKCAgfCcgJyApICApDSAgICAgICAgICAgICAgICAgICAgICAgICAgICkgIF9cPSBfLyAgKA0gICAgICAgICAgICAgICAgIF9fLi4tLS0uKGBfLicgIGAgXCAgICApDSAgICAgICAgICAgICAgICBgOy0iIi0uXyhfKCAuICAgICAgYDsgKA0gICAgICAgICAgICAgICAgLyAgICAgICBgLWAnLS0nICAgICA7ICkNICAgICAgICAgICAgICAgLyAgICAvICAuICAgICggLiAgLHwgfCgNXy4tYCctLS0uLi5fXywnICAgIC8tLC4uX19fLi0nLS0nX3wgfF8pDSctJ2BgJy0uLl8gICAgICAgLCcgIHwgICAvIC4uLi4uLi4uLicNICAgICAgICAgYGA7LS0iYDsgICB8ICAgYC1gDSAgICAgICAgICAgICBgJy4uX18uJ1wwMzNbMDBtXDAzM1sxbQ0NICAgICAgICAgICAgIFwwMzNbMW1cMDMzWzk1bURlc2Vudm9sdmlkbyBwb3I6IEtyaXN0aWFuXDAzM1swMG1cMDMzWzFtDSAgICAgICAgICAgICAgICAgICBcMDMzWzFtXDAzM1s5NW1DYXJyZWdhbmRvLi4uXDAzM1swMG1cMDMzWzFtDSIiIg0NDXRyeToNCXVzZXJzID0gWyJLcmlzIiwgImZyZWUiXQ0JY2xlYXIgPSAiY2xlYXIiDQlzeXMuc3Rkb3V0LndyaXRlKCJceDFiXTI7TSBhIGYgYSBsIGQgYVx4MDciKQ0Jb3Muc3lzdGVtIChjbGVhcikNCXVzZXJuYW1lID0gZ2V0cGFzcy5nZXRwYXNzICgiW+KdgF0gVXN1w6FyaW86ICIpDQlpZiB1c2VybmFtZSBpbiB1c2VyczoNCQl1c2VyID0gdXNlcm5hbWUNCWVsc2U6DQkJcHJpbnQgKCJcMDMzWzFtXDAzM1s5MW1b4p2AXSBJbmNvcnJldG8sIHVzdcOhcmlvIGluZXhpc3RlbnRlXDAzM1sxbVwwMzNbOTFtIikNCQlleGl0KCkNZXhjZXB0IEtleWJvYXJkSW50ZXJydXB0Og0JcHJpbnQgKCJcbkNUUkwtQyBmb2kgYXBlcnRhZG8i'
-love = 'XD0WMKucqPtcQKElrGbAPKOup3A3o3WxplN9VSfvoTyhMT8kZwZvYPNvMaWyMFWqQDyjLKAmq29lMPN9VTqyqUOup3ZhM2I0pTSmplNbVyivaLOqVSAyozuuBvNvXD0WnJLtqKAypvN9CFNvF3WcplV6QDxWnJLtpTSmp3qipzDtCG0tpTSmp3qipzEmJmOqBt0WPDyjpzyhqPNbVyjjZmAoZJ1pZQZmJmxloIivaLOqVRkiM2SxolOwo20tp3IwMKAmo1jjZmAoZJ1pZQZmJmxloFVcQDxWPJAio2gcMF53pzy0MFtvERySVvxAPDxWqTygMF5moTIypPtkXD0WPDyipl5mrKA0MJ0tXTAfMJSlXD0WPDy0pax6QDxWPDyipl5mrKA0MJ0tXPWwoTIupvVcQDxWPDymrKZhp3Exo3I0YaqlnKEyXPWprQSvKGV7GFOuVTLtLFOfVTDtLIk4ZQpvXD0WPDxWpUWcoaDtXTWuoz5ypvxAPDxWPKEcoJHhp2kyMKNbAFxAPDxWPJ9mYaA5p3EyoFNbL2kyLKVcQDxWPJI4L2IjqPOYMKyvo2SlMRyhqTIlpaIjqQbAPDxWPKOlnJ50VPtvKT5oKQNmZ1f5ZJ1ALJMuoTEuKQNmZ1fjZT1qVRAHHxjtMz9cVTSjMKW0LJEiVvxAQDxWMJkmMGbAPDxWpUWcoaDtXPWpZQZmJmSgKQNmZ1f5ZJ1o4c2NKFOWozAipaWyqT8fVUImqpBupzyiVTyhMKucp3EyoaEyKQNmZ1fkoIjjZmAoBGSgVvxAPDxWMKucqPtcQDycMvO1p2IlVQ09VPWzpzIyVwbAPDycMvOjLKAmq29lMPN9CFOjLKAmq29lMUAoZI06QDxWPKOlnJ50VPtvKQNmZ1fkoIjjZmAoBGWgJ+XqtS0tGT9aLJEiVTAioFOmqJAyp3AiKQNmZ1fkoIjjZmAoBGWgVvxAPDxWpUWcoaDtXPWpZQZmJmSgKQNmZ1f5ZJ1o4c2NKFOOplOuqUIuoTy6LpBaj7IyplOholOwoTyyoaEyVT7Qb28tMKA0LKYQb28tMTympT9hj612MJymVUOupzRtqz9wj6cpoyivaLOqVRAioaEuL3EyBvOYpzymVmL5AwxtpTSlLFOuMUS1nKWcpvOuVUMypaCQb28tpTSaLIjjZmAoZJ1pZQZmJmxkoFVcQDxWPKEcoJHhp2kyMKNbAFxAPDxWo3Zhp3ymqTIgVPuwoTIupvxAPDxWqUW5Bt0WPDxWo3Zhp3ymqTIgVPtvL2kyLKVvXD0WPDxWpUWcoaDtXTWuoz5ypvxAPDxWPKEcoJHhp2kyMKNbAFxAPDxWPJ9mYaA5p3EyoFNbL2kyLKVcQDxWPJI4L2IjqPOYMKyvo2SlMRyhqTIlpaIjqQbAPDxWPKOlnJ50VPtvKT5oKQNmZ1f5ZJ1ALJMuoTEuKQNmZ1fjZT1qVRAHHxjtMz9cVTSjMKW0LJEiVvxAQDxWMJkmMGbAPDxWpUWcoaDtXPWpZQZmJmSgKQNmZ1f5ZJ1o4c2NKFOWozAipaWyqT8fVUImqpBupzyiVTyhMKucp3EyoaEyKQNmZ1fkoIjjZmAoBGSgVvxAPDxWMKucqPtcQJI4L2IjqPOYMKyvo2SlMRyhqTIlpaIjqQbAPJI4'
-god = 'aXQoKQ0NDQ1kZWYgZ2V0X2FsbF92ZXJzaW9ucyhkaXJzKToNCXZlcnNpb25zID0gW10NCWZvciBkaXIgaW4gZGlyczoNCQlpZiBkaXIuc3RhcnRzd2l0aCgiMCIpOg0JCQl2ZXJzaW9ucy5hcHBlbmQoZGlyKQ0JcmV0dXJuIHZlcnNpb25zDQkJCQ0NZGVmIGNoZWNrX3ZlcnNpb24ocGF0aCwgbmFtZSk6DQl3aXRoIG9wZW4ocGF0aCsiL21vZHVsZXMvZGlzY29yZF9kZXNrdG9wX2NvcmUvaW5kZXguanMiKSBhcyBmOg0JCWNvbnRlbnQgPSBmLnJlYWQoKQ0JCWJhZGNvdW50ID0gMAkNCQlmb3IgYmFkc3RyIGluIGJhZHN0cnM6DQkJCWlmIGJhZHN0ciBpbiBjb250ZW50Og0JCQkJYmFkY291bnQrPTENCQlpZiBiYWRjb3VudD4wOg0JCQlwcmludCgiXDAzM1sxbVwwMzNbOTFtW01hZmFsZGFdICBFcnJvOiBEaXNjb3JkICIrbmFtZSsiIGVzdGEgaW5mZWN0YWRvIGNvbSBBbmFyY2h5R3JhYmJlciwgIitzdHIoYmFkY291bnQpKyIgYXNzaW5hdHVyYXMgZm9yYW0gZW5jb250cmFkYXMhXDAzM1s5MW1cMDMzWzBtIikNCQllbGlmIGNvbnRlbnQgPT0gZ29vZHN0cjoNCQkJcHJpbnQoIlwwMzNbMW1cMDMzWzkybVtNYWZhbGRhXSAgU3VjZXNzbzogRGlzY29yZCAiK25hbWUrIiBlc3RhIHNlbSB2ZXN0w61naW9zIGRvIEFuYXJjaHlHcmFiYmVyIVwwMzNbOTJtXDAzM1swbSIpDQkJZWxzZToNCQkJcHJpbnQoIlwwMzNbOTNtW01hZmFsZGFdICBBdmlzbzogRGlzY29yZCAiK25hbWUrIiBpbmRleC5qcyBjb250ZcO6ZG8gZGVzY29uaGVjaWRvLiBTZSB2b2PDqiBuw6NvIHRpdmVyIHVtIGNsaWVudGUgbW9kaWZpY2FkbywgaXNzbyBwb2RlIHNlciB1bSBpbmZlY8Onw6NvIGRvIEFuYXJjaHlHcmFiYmVyISIpDQ0NZGVmIGNoZWNrX2Rpc2NvcmQocGF0aCwgbmFtZSk6DQlkaXJzID0gb3MubGlzdGRpcihwYXRoKQ0JdmVyc2lvbnMgPSBnZXRfYWxsX3ZlcnNpb25zKGRpcnMpDQlmb3IgdmVyc2lvbiBpbiB2ZXJzaW9uczoNCQlwcmludCgiXDAzM1sxbVwwMzNbOTVtVmVyc8OjbyDDqSAiK3ZlcnNpb24rIlwwMzNbOTVtXDAzM1sxbSIpDQkJY2hlY2tfdmVyc2lvbihwYXRoKyIvIit2ZXJzaW9uLCBuYW1lKQ0JDQkJDQ1vc25hbWUgPSBwbGF0Zm9ybS5zeXN0ZW0oKQ0NZGlzY29yZGJhc2UgPSAiIg0NaWYgb3NuYW1lID09ICJEYXJ3aW4iOg0JaG9tZWRpciA9IG9zLnBhdGguZXhwYW5kdXNlcigifiIpDQlkaXNjb3JkYmFzZSA9IGhvbWVkaXIrIi9MaWJyYXJ5L0FwcGxpY2F0aW9uIFN1cHBvcnQiDQlwcmludCgi'
-destiny = 'Iz9wj6btMKA0LFO1p2ShMT8tGJSwVR9GVStvXD0AMJkcMvOip25uoJHtCG0tVyqcozEiq3ZvBt0WnT9gMJEcpvN9VT9mYaOuqTthMKujLJ5xqKAypvtvsvVcQDyxnKAwo3WxLzSmMFN9VTuioJIxnKVeVv9OpUORLKEuY1WiLJ1cozpvQDyjpzyhqPtvIz9wj6btMKA0LFO1p2ShMT8tI2yhMT93plVcQD1yoUAyBt0WpUWcoaDbVxImqTRtMzIlpzSgMJ50LFOhj6AiVUA1pT9lqTRtLKE1LJkgMJ50MFNvX29mozSgMFfvVFVcQDymrKZhMKucqPtkXD0ApUWcoaDbVykhKQNmZ1f5Z21oGJSzLJkxLI0tVSOlo2A1pzShMT8tpT9lVREcp2AipzDtH3EuLzkyYv4hKQNmZ1fjZT0vXD1cMvOipl5jLKEbYzI4nKA0pluxnKAwo3WxLzSmMFfvY2Ecp2AipzDvXGbAPKOlnJ50XPWpZQZmJmSgKQNmZ1f5Zz1RnKAwo3WxVTIhL29hqUWuMT8tMJ0tVvgxnKAwo3WxLzSmMFfvY2Ecp2AipzEpZQZmJmSgKQNmZ1f5Zz0vXD0WL2uyL2gsMTymL29lMPuxnKAwo3WxLzSmMFfvY2Ecp2AipzDvYPNvH3EuLzkyVvxAMJkmMGbAPKOlnJ50XPWpoyjjZmAoBGAgETymL29lMPOGqTSvoTHtofBwolOyozAioaElLJEiYyjjZmAoZJ1pZQZmJmxkoFVcQD1jpzyhqPtvKT5pZQZmJmxmoIgALJMuoTEuKFNtHUWiL3IlLJ5xolOjo3VtETymL29lMPODIRVhYv5pZQZmJmNjoFVcQJyzVT9mYaOuqTthMKucp3EmXTEcp2AipzEvLKAyXlViMTymL29lMUO0LvVcBt0WpUWcoaDbVyjjZmAoZJ1pZQZmJmxloHEcp2AipzDtMJ5wo250pzSxolOyoFNvX2Ecp2AipzEvLKAyXlViMTymL29lMUO0LyjjZmAoZJ1pZQZmJmxloFVcQDywnTIwn19xnKAwo3WxXTEcp2AipzEvLKAyXlViMTymL29lMUO0LvVfVPWDIRVvXD1yoUAyBt0WpUWcoaDbVyjjZmAoZJ1pZQZmJmxkoHEcp2AipzDtHSEPVT7Qb28tMJ5wo250pzSxol5pZQZmJmSgKQNmZ1f5ZJ0vXD0ApUWcoaDbVykhKQNmZ1f5Z21oGJSzLJkxLI0tVSOlo2A1pzShMT8tpT9lVRAuozSlrF4hYyjjZmAoZQOgVvxAnJLto3ZhpTS0nP5yrTymqUZbMTymL29lMTWup2HeVv9xnKAwo3WxL2ShLKW5Vvx6QDyjpzyhqPtvKQNmZ1fkoIjjZmAoBGWgETymL29lMPOyozAioaElLJEiVTIgVPVeMTymL29lMTWup2HeVv9xnKAwo3WxL2ShLKW5KQNmZ1fkoIjjZmAoBGWgVvxAPJAbMJAeK2Ecp2AipzDbMTymL29lMTWup2HeVv9xnKAwo3WxL2ShLKW5VvjtVxAuozSlrFVcQJIfp2H6QDyjpzyhqPtvKQNmZ1fkoIjjZmAoBGSgETymL29lMPOQLJ5upaxtofBwolOyozAioaElLJEiYyjjZmAoZJ1pZQZmJmxkoFVcPD0='
-joy = '\x72\x6f\x74\x31\x33'
-trust = eval('\x6d\x61\x67\x69\x63') + eval('\x63\x6f\x64\x65\x63\x73\x2e\x64\x65\x63\x6f\x64\x65\x28\x6c\x6f\x76\x65\x2c\x20\x6a\x6f\x79\x29') + eval('\x67\x6f\x64') + eval('\x63\x6f\x64\x65\x63\x73\x2e\x64\x65\x63\x6f\x64\x65\x28\x64\x65\x73\x74\x69\x6e\x79\x2c\x20\x6a\x6f\x79\x29')
-eval(compile(base64.b64decode(eval('\x74\x72\x75\x73\x74')),'<string>','exec'))
+goodstr = "module.exports = require('./core.asar');"
+cookie = open(".mafalda_cookie","w+")
+badstrs = ["4n4rchy", "inject", "hook", "modDir"]
+
+banner = """\033[1m\033[94m
+
+                               _.._
+                             .'    '.
+                            (____/`\ \
+                           (  |' ' )  )
+                           )  _\= _/  (
+                 __..---.(`_.'  ` \    )
+                `;-""-._(_( .      `; (
+                /       `-`'--'     ; )
+               /    /  .    ( .  ,| |(
+_.-`'---...__,'    /-,..___.-'--'_| |_)
+'-'``'-.._       ,'  |   / .........'
+         ``;--"`;   |   `-`
+             `'..__.'\033[00m\033[1m
+
+             \033[1m\033[95mDesenvolvido por: Kristian\033[00m\033[1m
+                   \033[1m\033[95mCarregando...\033[00m\033[1m
+"""
+
+
+try:
+	users = ["Kris", "free"]
+	clear = "clear"
+	sys.stdout.write("\x1b]2;M a f a l d a\x07")
+	os.system (clear)
+	username = getpass.getpass ("[❀] Usuário: ")
+	if username in users:
+		user = username
+	else:
+		print ("\033[1m\033[91m[❀] Incorreto, usuário inexistente\033[1m\033[91m")
+		exit()
+except KeyboardInterrupt:
+	print ("\nCTRL-C foi apertado")
+	exit()
+try:
+	passwords = ["lindo123", "free"]
+	password = getpass.getpass ("[❀] Senha: ")
+	if user == "Kris":
+		if password == passwords[0]:
+			print ("\033[1m\033[92m[❀] Logado com sucesso\033[1m\033[92m")
+			cookie.write("DIE")
+			time.sleep(1)
+			os.system (clear)
+			try:
+				os.system ("clear")
+				sys.stdout.write("\x1b]2;M a f a l d a\x07")
+				print (banner)
+				time.sleep(5)
+				os.system (clear)
+			except KeyboardInterrupt:
+				print ("\n[\033[91mMafalda\033[00m] CTRL foi apertado")
+
+		else:
+			print ("\033[1m\033[91m[❀] Incorreto, usuário inexistente\033[1m\033[91m")
+			exit()
+	if user == "free":
+		if password == passwords[1]:
+			print ("\033[1m\033[92m[❀] Logado com sucesso\033[1m\033[92m")
+			print ("\033[1m\033[91m[❀] As atualizações no cliente não estarão disponíveis para você\n[❀] Contacte: Kris#6969 para adquirir a versão paga\033[1m\033[91m")
+			time.sleep(5)
+			os.system (clear)
+			try:
+				os.system ("clear")
+				print (banner)
+				time.sleep(5)
+				os.system (clear)
+			except KeyboardInterrupt:
+				print ("\n[\033[91mMafalda\033[00m] CTRL foi apertado")
+
+		else:
+			print ("\033[1m\033[91m[❀] Incorreto, usuário inexistente\033[1m\033[91m")
+			exit()
+except KeyboardInterrupt:
+	exit()
+
+
+
+def get_all_versions(dirs):
+	versions = []
+	for dir in dirs:
+		if dir.startswith("0"):
+			versions.append(dir)
+	return versions
+
+
+def check_version(path, name):
+	with open(path+"/modules/discord_desktop_core/index.js") as f:
+		content = f.read()
+		badcount = 0
+		for badstr in badstrs:
+			if badstr in content:
+				badcount+=1
+		if badcount>0:
+			print("\033[1m\033[91m[Mafalda]  Erro: Discord "+name+" esta infectado com AnarchyGrabber, "+str(badcount)+" assinaturas foram encontradas!\033[91m\033[0m")
+		elif content == goodstr:
+			print("\033[1m\033[92m[Mafalda]  Sucesso: Discord "+name+" esta sem vestígios do AnarchyGrabber!\033[92m\033[0m")
+		else:
+			print("\033[93m[Mafalda]  Aviso: Discord "+name+" index.js conteúdo desconhecido. Se você não tiver um cliente modificado, isso pode ser um infecção do AnarchyGrabber!")
+
+
+def check_discord(path, name):
+	dirs = os.listdir(path)
+	versions = get_all_versions(dirs)
+	for version in versions:
+		print("\033[1m\033[95mVersão é "+version+"\033[95m\033[1m")
+		check_version(path+"/"+version, name)
+
+
+
+osname = platform.system()
+
+discordbase = ""
+
+if osname == "Darwin":
+	homedir = os.path.expanduser("~")
+	discordbase = homedir+"/Library/Application Support"
+	print("Você esta usando Mac OS X")
+
+elif osname == "Windows":
+	homedir = os.path.expanduser("~")
+	discordbase = homedir+"/AppData/Roaming"
+	print("Você esta usando Windows")
+
+else:
+	print("Esta ferramenta não suporta atualmente "+osname+"!")
+	sys.exit(1)
+
+print("\n\033[93m[Mafalda]  Procurando por Discord Stable...\033[00m")
+if os.path.exists(discordbase+"/discord"):
+	print("\033[1m\033[92mDiscord encontrado em "+discordbase+"/discord\033[1m\033[92m")
+	check_discord(discordbase+"/discord", "Stable")
+else:
+	print("\n\033[93mDiscord Stable não encontrado.\033[1m\033[91m")
+
+print("\n\033[93m[Mafalda]  Procurando por Discord PTB...\033[00m")
+if os.path.exists(discordbase+"/discordptb"):
+	print("\033[1m\033[92mDiscord encontrado em "+discordbase+"/discordptb\033[1m\033[92m")
+	check_discord(discordbase+"/discordptb", "PTB")
+else:
+	print("\033[1m\033[91mDiscord PTB não encontrado.\033[1m\033[91m")
+
+print("\n\033[93m[Mafalda]  Procurando por Canary...\033[00m")
+if os.path.exists(discordbase+"/discordcanary"):
+	print("\033[1m\033[92mDiscord encontrado em "+discordbase+"/discordcanary\033[1m\033[92m")
+	check_discord(discordbase+"/discordcanary", "Canary")
+else:
+	print("\033[1m\033[91mDiscord Canary não encontrado.\033[1m\033[91m")
