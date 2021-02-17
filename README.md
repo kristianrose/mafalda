@@ -10,7 +10,7 @@ REQUESITOS
 ## Intalação
 
 ```
-pip3 install requirements.txt
+pip3 install ou pip3 install requirements.txt
 ```
 ## Utilizacão
 ```
